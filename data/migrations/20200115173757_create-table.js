@@ -9,5 +9,5 @@ exports.up = async function (knex) {
 };
 
 exports.down = async function (knex) {
-   await knex.schema.dropTableIfExits(USERS);
+   await knex.schema.dropTableIfExists(USERS);
 };

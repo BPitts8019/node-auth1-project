@@ -1,0 +1,29 @@
+{
+  "name": "node-auth1-project",
+  "version": "1.0.0",
+  "description": "Use Node.js, Express and Knex to build an API that provides Register and Login functionality using SQLite to store User information; the password is not stored as plain text.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BPitts8019/node-auth1-project.git"
+  },
+  "author": "Bradley Pitts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BPitts8019/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/BPitts8019/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.8",
+    "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

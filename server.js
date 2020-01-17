@@ -57,7 +57,7 @@ server.post("/api/login", async (req, res, next) => {
       const validPassword = bcrypt.compareSync(password, user.password);
       if (!validPassword) {
          return res.status(401).json({
-            message: "The username and/or password is invalid."
+            message: "You shall not pass!"
          });
       }
 

@@ -9,14 +9,19 @@ const findById = id => {
       .where({id})
       .first();
 };
-const findBy = (filter) => {
+const findBy = filter => {
    return users_db()
       .where(filter)
       .first();
+};
+const add = async newUser => {
+   const [id] = await users_db().insert(newUser);
+   return findById(id);
 };
 
 module.exports = {
    find,
    findById,
-   findBy
+   findBy,
+   add
 }

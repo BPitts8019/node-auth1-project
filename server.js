@@ -1,12 +1,15 @@
 const express = require("express");
-const helmet = require("helmet");
 const server = express();
+
+//middleware
+const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
+const restricted = require("./auth/restricted");
 
 //data models
 const users_db = require("./users/users-model");
 
-//middleware
+//apply middleware
 server.use(helmet());
 server.use(express.json());
 
@@ -27,7 +30,7 @@ server.post("/api/register", async (req, res, next) => {
       }
    
       const newUser = await users_db.add({username, password});
-      res.status(201).json(newUser);
+      res.status(201).json(stripPasswords(newUser));
    } catch (error) {
       next(error);
    }
@@ -70,7 +73,7 @@ server.post("/api/login", async (req, res, next) => {
 });
 
 //GET /api/users
-server.get("/api/users", async (req, res, next) => {
+server.get("/api/users", restricted(), async (req, res, next) => {
    try {
       let users = await users_db.find();
       res.json(users.map(stripPasswords));

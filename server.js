@@ -3,9 +3,9 @@ const server = express();
 
 //middleware
 const helmet = require("helmet");
-const bcrypt = require("bcryptjs");
 const credentialsInput = require("./auth/credentialsInput");
 const restricted = require("./auth/restricted");
+const session = require("express-session");
 
 
 //data models
@@ -14,6 +14,16 @@ const users_db = require("./users/users-model");
 //apply middleware
 server.use(helmet());
 server.use(express.json());
+server.use(session({
+   resave: false,
+   saveUninitialized: false,
+   secret: process.env.SECRET_PHRASE,
+   cookie: {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 30,//expires after 30min
+      secure: false
+   },
+}));
 
 //Welcome
 server.get("/", (req, res, next) => {

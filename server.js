@@ -72,8 +72,8 @@ server.post("/api/login", async (req, res, next) => {
 //GET /api/users
 server.get("/api/users", async (req, res, next) => {
    try {
-      const users = await users_db.find();
-      res.json(users);
+      let users = await users_db.find();
+      res.json(users.map(stripPasswords));
    } catch (error) {
       next(error);
    }
@@ -94,3 +94,10 @@ server.use((error, req, res, next) => {
 });
 
 module.exports = server;
+
+function stripPasswords (user) {
+   return {
+      id: user.id,
+      username: user.username
+   }
+}

@@ -4,7 +4,9 @@ const server = express();
 //middleware
 const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
+const credentialsInput = require("./auth/credentialsInput");
 const restricted = require("./auth/restricted");
+
 
 //data models
 const users_db = require("./users/users-model");
@@ -19,17 +21,9 @@ server.get("/", (req, res, next) => {
 });
 
 //POST /api/register
-server.post("/api/register", async (req, res, next) => {
+server.post("/api/register", credentialsInput(), async (req, res, next) => {
    try {
-      const {username, password} = req.body;
-   
-      if (!username || !password) {
-         return res.status(400).json({
-            message: "Please provide a username and password."
-         });
-      }
-   
-      const newUser = await users_db.add({username, password});
+      const newUser = await users_db.add(req.credentials);
       res.status(201).json(stripPasswords(newUser));
    } catch (error) {
       next(error);
@@ -37,43 +31,16 @@ server.post("/api/register", async (req, res, next) => {
 });
 
 //POST /api/login
-server.post("/api/login", async (req, res, next) => {
-   const {username, password} = req.body;
-
-   //validate request
-   if (!username || !password) {
-      return res.status(400).json({
-         message: "Please provide a username and password."
-      });
-   }
-
-   try {
-      //find the user
-      const user = await users_db.findBy({username}).first();
-      if (!user) {
-         return res.status(404).json({
-            message: `No user with username: ${username} found.`
-         });
-      }
-
-      //validate the password
-      const validPassword = bcrypt.compareSync(password, user.password);
-      if (!validPassword) {
-         return res.status(401).json({
-            message: "You shall not pass!"
-         });
-      }
-
-      res.json({
-         message: `Welcome back ${username}!`
-      });
-   } catch (error) {
-      next(error);
-   }
+server.post("/api/login", credentialsInput(), restricted(), async (req, res, next) => {
+   //credentials checked in restricted middleware
+   res.json({
+      message: `Welcome back ${req.credentials.username}!`
+   });
 });
 
 //GET /api/users
 server.get("/api/users", restricted(), async (req, res, next) => {
+   //credentials checked in restricted middleware
    try {
       let users = await users_db.find();
       res.json(users.map(stripPasswords));

@@ -6,7 +6,6 @@ const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const credentialsInput = require("./auth/credentialsInput");
-const restricted = require("./auth/restricted");
 
 //data models
 const users_db = require("./users/users-model");

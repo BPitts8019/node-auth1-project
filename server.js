@@ -5,9 +5,11 @@ const server = express();
 const helmet = require("helmet");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
 const credentialsInput = require("./auth/credentialsInput");
 
 //data models
+const dbConfig = require("./data/db-obj");
 const users_db = require("./users/users-model");
 
 //apply middleware
@@ -22,6 +24,10 @@ server.use(session({
       maxAge: 1000 * 60 * 30,//expires after 30min
       secure: false
    },
+   store: new KnexSessionStore({
+      knex: dbConfig,
+      createtable: true
+   })
 }));
 
 //Welcome

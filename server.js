@@ -3,10 +3,10 @@ const server = express();
 
 //middleware
 const helmet = require("helmet");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
 const credentialsInput = require("./auth/credentialsInput");
 const restricted = require("./auth/restricted");
-const session = require("express-session");
-
 
 //data models
 const users_db = require("./users/users-model");
@@ -41,11 +41,31 @@ server.post("/api/register", credentialsInput(), async (req, res, next) => {
 });
 
 //POST /api/login
-server.post("/api/login", credentialsInput(), restricted(), async (req, res, next) => {
+server.post("/api/login", credentialsInput(),  async (req, res, next) => {
    //credentials checked in restricted middleware
-   res.json({
-      message: `Welcome back ${req.credentials.username}!`
-   });
+   //userame and password expected in req.credentials
+   const {username, password} = req.credentials;
+
+   try {
+      //find the user
+      const user = await users_db.findBy({username}).first();
+
+      //validate user found and password
+      if (!user || !bcrypt.compareSync(password, user.password)) {
+         return res.status(403).json({
+            message: "You shall not pass!"
+         });
+      }
+
+      //Authenticated! Save user data in current session
+      console.log("Authenticated!");
+      req.session.user = user;
+      res.json({
+         message: `Welcome back ${user.username}!`
+      });
+   } catch (error) {
+      next(error);
+   }
 });
 
 //GET /api/users

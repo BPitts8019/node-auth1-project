@@ -69,8 +69,15 @@ server.post("/api/login", credentialsInput(),  async (req, res, next) => {
 });
 
 //GET /api/users
-server.get("/api/users", restricted(), async (req, res, next) => {
-   //credentials checked in restricted middleware
+server.get("/api/users", async (req, res, next) => {
+   //check for loggedin user
+   if (!req.session || !req.session.user) {
+      return res.status(403).json({
+         message: "You shall not pass!"
+      });
+   }
+
+   console.log("Authenticated! Getting users list");
    try {
       let users = await users_db.find();
       res.json(users.map(stripPasswords));
